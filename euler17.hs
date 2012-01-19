@@ -1,0 +1,35 @@
+import Data.List
+
+numberToword 1 = "one"
+numberToword 2 = "two"
+numberToword 3 = "three"
+numberToword 4 = "four"
+numberToword 5 = "five"
+numberToword 6 = "six"
+numberToword 7 = "seven"
+numberToword 8 = "eight"
+numberToword 9 = "nine"
+numberToword 10 = "ten"
+numberToword 11 = "eleven"
+numberToword 12 = "twelve"
+numberToword 13 = "thirteen"
+numberToword 14 = "fourteen"
+numberToword 15 = "fifteen"
+numberToword 16 = "sixteen"
+numberToword 17 = "seventeen"
+numberToword 18 = "eighteen"
+numberToword 19 = "nineteen"
+numberToword 20 = "twenty"
+numberToword 30 = "thirty"
+numberToword 40 = "forty"
+numberToword 50 = "fifty"
+numberToword 60 = "sixty"
+numberToword 70 = "seventy"
+numberToword 80 = "eighty"
+numberToword 90 = "ninety"
+numberToword 1000 = "one thousand"
+numberToword x | x > 99 = numberToword (x `div` 100) ++ " hundred" ++ rem (x `mod` 100)
+               | otherwise = numberToword ((x `div` 10) * 10) ++ " " ++ numberToword (x `mod` 10)
+    where
+        rem 0 = ""
+        rem x = " and " ++ numberToword x
