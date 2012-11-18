@@ -1,30 +1,30 @@
 import qualified Data.Map as DM
 import System.Environment
 import Control.Monad
+import System.Environment
 
-type Args = (Int, Int)
-type Cache = DM.Map Args Integer
+pentagonal x = x*(3*x-1) `div` 2
 
-type F = Int -> Int -> Cache -> (Integer, Cache)
+type Cache = DM.Map Int Integer
 
-p :: F
-p 0 0 m = (1,m)
-p _ 0 m = (0,m)
-p n k m | k > n      = calc n n m
-        | otherwise  = let (x, m')  = calc n (k-1) m 
-                           (y, m'') = calc (n - k) k m'
-                       in (x + y, m'')
+generalized_pentagonal n | n < 0          = 0
+                         | n `mod` 2 == 0 = pentagonal (n `div` 2 + 1)
+                         | otherwise      = pentagonal (-(n `div` 2 + 1))
+
+solve n cache = g 0 (-1) 0 cache
   where
-    calc :: F
-    calc x y m = case DM.lookup (x,y) m of
-                    Just z  -> (z,m)
-                    Nothing -> let (z,m') = p x y m 
-                               in (z, DM.insert (x,y) z m')
+    g r f i c | k > n = (n, r, DM.insert n r c)
+              | otherwise = g ( r + f' * (c DM.! (n - k)) ) f' (succ i) c
+      where
+        k = generalized_pentagonal(i)
+        f' | i `mod` 2 == 0 = (-f)
+           | otherwise = f
 
-solve x m = let (x',m') = p x x m
-            in (x,x') : solve (x+1) m'
-
+generate = f 1 $ DM.singleton 0 1
+  where
+    f x c = let (n, r, c') = solve x c
+            in (n,r) : f (x+1) c'
 
 main = do
-  divisor <- liftM (read . head) getArgs
-  print . head . dropWhile ((/=0) . (`mod` divisor) . snd ) $ solve 1 DM.empty
+  lim <- liftM (read . head) getArgs
+  print . head $ dropWhile ( ( /=0 ) . (`mod` lim) . snd) generate
